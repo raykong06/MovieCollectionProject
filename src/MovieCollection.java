@@ -7,11 +7,13 @@ import java.util.Scanner;
 public class MovieCollection
 {
     private ArrayList<Movie> movies;
+    private ArrayList<String> fullCast;
     private Scanner scanner;
 
     public MovieCollection(String fileName)
     {
         importMovieList(fileName);
+        castMembers();
         scanner = new Scanner(System.in);
     }
 
@@ -148,6 +150,21 @@ public class MovieCollection
         }
     }
 
+    private void sortCastResults(ArrayList<String> listToSort)
+    {
+        for (int i = 1; i < listToSort.size(); i++)
+        {
+            String temp = listToSort.get(i);
+            int possibleIndex = i;
+            while (possibleIndex > 0 && temp.compareTo(listToSort.get(possibleIndex - 1)) < 0)
+            {
+                listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
+                possibleIndex--;
+            }
+            listToSort.set(possibleIndex, temp);
+        }
+    }
+
     private void displayMovieInfo(Movie movie)
     {
         System.out.println();
@@ -164,7 +181,57 @@ public class MovieCollection
 
     private void searchCast()
     {
+        System.out.print("Enter an actor to search for: ");
+        String searchCast = scanner.nextLine();
 
+        searchCast = searchCast.toLowerCase();
+
+        ArrayList<String> castResults = new ArrayList<String>();
+
+        for (int i = 0; i < fullCast.size(); i++)
+        {
+            String specificCast = fullCast.get(i);
+            String specificCastLowerCase = specificCast.toLowerCase();
+            if (specificCastLowerCase.indexOf(searchCast) > -1)
+            {
+                castResults.add(specificCast);
+            }
+        }
+
+        sortCastResults(castResults);
+
+        for (int i = 0; i < castResults.size(); i++)
+        {
+            String actor = castResults.get(i);
+
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + actor);
+        }
+
+        System.out.println("For which actor would you like to see what movies they have been casted in?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        String selectedActor = castResults.get(choice - 1);
+
+        ArrayList<Movie> results = new ArrayList<Movie>();
+
+        for (int i = 0; i < movies.size(); i++)
+        {
+            String cast[] = movies.get(i).getCast().split("\\|");
+            for (int j = 0; j < cast.length; j++)
+            {
+                String actor = cast[j].toLowerCase();
+                if (actor.equals(selectedActor.toLowerCase()))
+                {
+                    results.add(movies.get(i));
+                    j = cast.length;
+                }
+            }
+        }
+
+        learnMoreAbout(results);
     }
 
     private void searchKeywords()
@@ -191,6 +258,52 @@ public class MovieCollection
             }
         }
 
+        /*
+        sortResults(results);
+
+        for (int j = 0; j < results.size(); j++)
+        {
+            String title = results.get(j).getTitle();
+
+            int choiceNum = j + 1;
+
+            System.out.println("" + choiceNum + ". " + title);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = results.get(choice - 1);
+
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
+
+         */
+        learnMoreAbout(results);
+    }
+
+    private void listGenres()
+    {
+
+    }
+
+    private void listHighestRated()
+    {
+
+    }
+
+    private void listHighestRevenue()
+    {
+
+    }
+
+    private void learnMoreAbout(ArrayList<Movie> results)
+    {
         sortResults(results);
 
         for (int j = 0; j < results.size(); j++)
@@ -216,19 +329,30 @@ public class MovieCollection
         scanner.nextLine();
     }
 
-    private void listGenres()
+    private void castMembers()
     {
-
-    }
-
-    private void listHighestRated()
-    {
-
-    }
-
-    private void listHighestRevenue()
-    {
-
+        fullCast = new ArrayList<String>();
+        for (int i = 0; i < movies.size(); i++)
+        {
+            String[] movieCast = movies.get(i).getCast().split("\\|");
+            for (int j = 0; j < movieCast.length; j++)
+            {
+                String actor = movieCast[j];
+                String actorLowerCase = actor.toLowerCase();
+                boolean inList = false;
+                for (int k = 0; k < fullCast.size(); k++)
+                {
+                    if (actorLowerCase.equals(fullCast.get(k).toLowerCase()))
+                    {
+                        inList = true;
+                    }
+                }
+                if (!inList)
+                {
+                    fullCast.add(actor);
+                }
+            }
+        }
     }
 
     private void importMovieList(String fileName)
