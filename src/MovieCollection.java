@@ -8,12 +8,14 @@ public class MovieCollection
 {
     private ArrayList<Movie> movies;
     private ArrayList<String> fullCast;
+    private ArrayList<String> genres;
     private Scanner scanner;
 
     public MovieCollection(String fileName)
     {
         importMovieList(fileName);
         castMembers();
+        genresSet();
         scanner = new Scanner(System.in);
     }
 
@@ -150,7 +152,7 @@ public class MovieCollection
         }
     }
 
-    private void sortCastResults(ArrayList<String> listToSort)
+    private void sortStringResults(ArrayList<String> listToSort)
     {
         for (int i = 1; i < listToSort.size(); i++)
         {
@@ -198,7 +200,7 @@ public class MovieCollection
             }
         }
 
-        sortCastResults(castResults);
+        sortStringResults(castResults);
 
         for (int i = 0; i < castResults.size(); i++)
         {
@@ -257,39 +259,44 @@ public class MovieCollection
                 }
             }
         }
-
-        /*
-        sortResults(results);
-
-        for (int j = 0; j < results.size(); j++)
-        {
-            String title = results.get(j).getTitle();
-
-            int choiceNum = j + 1;
-
-            System.out.println("" + choiceNum + ". " + title);
-        }
-
-        System.out.println("Which movie would you like to learn more about?");
-        System.out.print("Enter number: ");
-
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        Movie selectedMovie = results.get(choice - 1);
-
-        displayMovieInfo(selectedMovie);
-
-        System.out.println("\n ** Press Enter to Return to Main Menu **");
-        scanner.nextLine();
-
-         */
         learnMoreAbout(results);
     }
 
     private void listGenres()
     {
+        for (int i = 0; i < genres.size(); i++)
+        {
+            String genre = genres.get(i);
 
+            int choiceNum = i + 1;
+
+            System.out.println("" + choiceNum + ". " + genre);
+        }
+
+        System.out.println("Which movie genre would you like to search in?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+
+        String searchGenre = genres.get(choice - 1).toLowerCase();
+        ArrayList<Movie> results = new ArrayList<Movie>();
+
+        for (int i = 0; i < movies.size(); i++)
+        {
+            String extractGenre = movies.get(i).getGenres();
+            String movieGenres[] = extractGenre.split("\\|");
+            for (int j = 0; j < movieGenres.length; j++)
+            {
+                String specificGenre = movieGenres[j].toLowerCase();
+                if (specificGenre.equals(searchGenre))
+                {
+                    results.add(movies.get(i));
+                    j = movieGenres.length;
+                }
+            }
+        }
+
+        learnMoreAbout(results);
     }
 
     private void listHighestRated()
@@ -345,6 +352,8 @@ public class MovieCollection
                     if (actorLowerCase.equals(fullCast.get(k).toLowerCase()))
                     {
                         inList = true;
+                        // k = fullCast.size();
+                        // necessary or not to make more efficient?
                     }
                 }
                 if (!inList)
@@ -354,6 +363,34 @@ public class MovieCollection
             }
         }
     }
+
+    private void genresSet()
+    {
+        genres = new ArrayList<String>();
+        for (int i = 0; i < movies.size(); i++)
+        {
+            String[] movieGenres = movies.get(i).getGenres().split("\\|");
+            for (int j = 0; j < movieGenres.length; j++)
+            {
+                String specificGenre = movieGenres[j];
+                String specificGenreLowerCase = specificGenre.toLowerCase();
+                boolean inList = false;
+                for (int k = 0; k < genres.size(); k++)
+                {
+                    if (specificGenreLowerCase.equals(genres.get(k).toLowerCase()))
+                    {
+                        inList = true;
+                    }
+                }
+                if (!inList)
+                {
+                    genres.add(specificGenre);
+                }
+            }
+        }
+        sortStringResults(genres);
+    }
+
 
     private void importMovieList(String fileName)
     {
