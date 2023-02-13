@@ -167,6 +167,23 @@ public class MovieCollection
         }
     }
 
+    private void sortResultsByRating(ArrayList<Movie> listToSort)
+    {
+        for (int j = 1; j < listToSort.size(); j++)
+        {
+            Movie temp = listToSort.get(j);
+            double tempRating = temp.getUserRating();
+
+            int possibleIndex = j;
+            while (possibleIndex > 0 && tempRating.compareTo(listToSort.get(possibleIndex - 1).getUserRating()) < 0)
+            {
+                listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
+                possibleIndex--;
+            }
+            listToSort.set(possibleIndex, temp);
+        }
+    }
+
     private void displayMovieInfo(Movie movie)
     {
         System.out.println();
@@ -301,7 +318,22 @@ public class MovieCollection
 
     private void listHighestRated()
     {
+        ArrayList<Movie> highestRated = new ArrayList<Movie>();
+        for (int i = 0; i < movies.size(); i++)
+        {
+            highestRated.add(movies.get(i));
+        }
+        sortResultsByRating(highestRated);
 
+        /*
+        for (int i = 50; i < highestRated.size(); i++)
+        {
+            highestRated.remove(i);
+            i++;
+        }
+
+         */
+        learnMoreAbout(highestRated);
     }
 
     private void listHighestRevenue()
