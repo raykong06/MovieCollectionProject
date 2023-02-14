@@ -169,18 +169,49 @@ public class MovieCollection
 
     private void sortResultsByRating(ArrayList<Movie> listToSort)
     {
-        for (int j = 1; j < listToSort.size(); j++)
+        for (int i = 0; i < listToSort.size(); i++)
         {
-            Movie temp = listToSort.get(j);
-            double tempRating = temp.getUserRating();
-
-            int possibleIndex = j;
-            while (possibleIndex > 0 && tempRating.compareTo(listToSort.get(possibleIndex - 1).getUserRating()) < 0)
+            Movie currentMovie = listToSort.get(i);
+            double currentMovieRating = currentMovie.getUserRating();
+            for (int j = 0; j < i; j++)
             {
-                listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
-                possibleIndex--;
+                Movie compareMovie = listToSort.get(j);
+                double compareMovieRating = compareMovie.getUserRating();
+                if (currentMovieRating > compareMovieRating)
+                {
+                    for (int k = i - 1; k >= j; k--)
+                    {
+                        Movie replace = listToSort.get(k);
+                        listToSort.set(k + 1, replace);
+                    }
+                    listToSort.set(j, currentMovie);
+                    j = i;
+                }
             }
-            listToSort.set(possibleIndex, temp);
+        }
+    }
+
+    private void sortResultsByRevenue(ArrayList<Movie> listToSort)
+    {
+        for (int i = 0; i < listToSort.size(); i++)
+        {
+            Movie currentMovie = listToSort.get(i);
+            int currentMovieRevenue = currentMovie.getRevenue();
+            for (int j = 0; j < i; j++)
+            {
+                Movie compareMovie = listToSort.get(j);
+                double compareMovieRevenue = compareMovie.getRevenue();
+                if (currentMovieRevenue > compareMovieRevenue)
+                {
+                    for (int k = i - 1; k >= j; k--)
+                    {
+                        Movie replace = listToSort.get(k);
+                        listToSort.set(k + 1, replace);
+                    }
+                    listToSort.set(j, currentMovie);
+                    j = i;
+                }
+            }
         }
     }
 
@@ -325,20 +356,71 @@ public class MovieCollection
         }
         sortResultsByRating(highestRated);
 
-        /*
         for (int i = 50; i < highestRated.size(); i++)
         {
             highestRated.remove(i);
-            i++;
+            i--;
         }
 
-         */
-        learnMoreAbout(highestRated);
+        for (int j = 0; j < highestRated.size(); j++)
+        {
+            String title = highestRated.get(j).getTitle() + " --- " + highestRated.get(j).getUserRating();
+
+            int choiceNum = j + 1;
+
+            System.out.println("" + choiceNum + ". " + title);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = highestRated.get(choice - 1);
+
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
     }
 
     private void listHighestRevenue()
     {
+        ArrayList<Movie> highestRevenue = new ArrayList<Movie>();
+        for (int i = 0; i < movies.size(); i++)
+        {
+            highestRevenue.add(movies.get(i));
+        }
+        sortResultsByRevenue(highestRevenue);
 
+        for (int i = 50; i < highestRevenue.size(); i++)
+        {
+            highestRevenue.remove(i);
+            i--;
+        }
+
+        for (int j = 0; j < highestRevenue.size(); j++)
+        {
+            String title = highestRevenue.get(j).getTitle() + " --- " + highestRevenue.get(j).getRevenue();
+
+            int choiceNum = j + 1;
+
+            System.out.println("" + choiceNum + ". " + title);
+        }
+
+        System.out.println("Which movie would you like to learn more about?");
+        System.out.print("Enter number: ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        Movie selectedMovie = highestRevenue.get(choice - 1);
+
+        displayMovieInfo(selectedMovie);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
     }
 
     private void learnMoreAbout(ArrayList<Movie> results)
